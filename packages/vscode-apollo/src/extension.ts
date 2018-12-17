@@ -42,9 +42,7 @@ export function activate(context: ExtensionContext) {
     run: {
       module: serverModule,
       transport: TransportKind.ipc,
-      options: {
-        env
-      }
+      options: debugOptions
     },
     debug: {
       module: serverModule,
@@ -86,6 +84,15 @@ export function activate(context: ExtensionContext) {
   context.subscriptions.push(client.start());
 
   client.onReady().then(() => {
+    commands.registerCommand("apollographql/showStatus", () => {
+      client.sendNotification("apollographql/getStatus");
+    });
+
+    client.onNotification("apollographql/statusLoaded", params => {
+      client.outputChannel.appendLine("Hello");
+      client.outputChannel.show();
+    });
+
     commands.registerCommand("apollographql/reloadService", () => {
       // wipe out tags when reloading
       // XXX we should clean up this handling

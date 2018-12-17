@@ -85,6 +85,7 @@ export class GraphQLClientProject extends GraphQLProject {
   private _onSchemaTags?: NotificationHandler<[ServiceID, SchemaTag[]]>;
 
   private fieldStats?: FieldStats;
+  private lastLoadDate?: number;
 
   constructor({
     config,
@@ -111,6 +112,18 @@ export class GraphQLClientProject extends GraphQLProject {
 
   initialize() {
     return [this.scanAllIncludedFiles(), this.loadServiceSchema()];
+  }
+
+  public getProjectStats() {
+    return {
+      serviceId: this.serviceID,
+      types: this.serviceSchema
+        ? Object.keys(this.serviceSchema.getTypeMap).length
+        : 0,
+      tag: this.config.tag,
+      loaded: this.serviceID,
+      lastFetch: ""
+    };
   }
 
   onDecorations(handler: (any: any) => void) {
@@ -215,6 +228,9 @@ export class GraphQLClientProject extends GraphQLProject {
         ] = await engineClient.loadSchemaTagsAndFieldStats(serviceID);
         this._onSchemaTags && this._onSchemaTags([serviceID, schemaTags]);
         this.fieldStats = fieldStats;
+
+        console.log(this.fieldStats);
+        this.lastLoadDate = +new Date();
 
         this.generateDecorations();
       })()

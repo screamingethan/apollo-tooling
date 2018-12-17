@@ -106,6 +106,8 @@ export abstract class GraphQLProject implements GraphQLSchemaProvider {
 
   protected abstract initialize(): Promise<void>[];
 
+  abstract getProjectStats(): any;
+
   get isReady(): boolean {
     return this._isReady;
   }

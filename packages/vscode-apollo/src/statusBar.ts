@@ -16,7 +16,7 @@ export default class ApolloStatusBar {
     this.statusBarItem.text = "Apollo GraphQL $(rss)";
     this.statusBarItem.show();
 
-    // this.statusBarItem.command = "apollographql/showOutputChannel";
+    this.statusBarItem.command = "apollographql/showStatus";
     // context.subscriptions.push(this.statusBarItem);
   }
 
