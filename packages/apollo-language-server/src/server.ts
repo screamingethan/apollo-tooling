@@ -212,8 +212,8 @@ connection.onNotification(
   (selection: QuickPickItem) => workspace.updateSchemaTag(selection)
 );
 
-connection.onNotification("apollographql/getStatus", () => {
-  const status = languageProvider.provideStatus();
+connection.onNotification("apollographql/getStatus", async () => {
+  const status = await languageProvider.provideStatus();
   connection.sendNotification("apollographql/statusLoaded", status);
 });
 

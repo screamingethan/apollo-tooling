@@ -89,7 +89,44 @@ export function activate(context: ExtensionContext) {
     });
 
     client.onNotification("apollographql/statusLoaded", params => {
-      client.outputChannel.appendLine("Hello");
+      const timeSince = (date: number) => {
+        const seconds = Math.floor((+new Date() - date) / 1000);
+        let interval = Math.floor(seconds / 86400);
+        if (interval >= 1) return `${interval}d`;
+
+        interval = Math.floor(seconds / 3600);
+        if (interval >= 1) return `${interval}h`;
+
+        interval = Math.floor(seconds / 60);
+        if (interval >= 1) return `${interval}m`;
+
+        return `${Math.floor(seconds)}s`;
+      };
+
+      if (!params.loaded) {
+        client.outputChannel.appendLine(
+          "Service not loaded. See above errors if any are printed"
+        );
+      } else {
+        client.outputChannel.appendLine("------------------------------");
+        client.outputChannel.appendLine(`🚀 Apollo GraphQL v${version}`);
+        client.outputChannel.appendLine("✅ Service Loaded!");
+        client.outputChannel.appendLine(`🆔 Service ID: ${params.serviceId}`);
+        client.outputChannel.appendLine(`🏷 Schema Tag: ${params.tag}`);
+        client.outputChannel.appendLine(
+          `📈 Number of Types: ${params.types.total} ${
+            params.types.client
+              ? `(${params.types.client} client ${
+                  params.types.client > 1 ? "types" : "type"
+                })`
+              : ""
+          }`
+        );
+        client.outputChannel.appendLine(
+          `🗓 Last Fetched ${timeSince(params.lastFetch)} Ago`
+        );
+        client.outputChannel.appendLine("------------------------------");
+      }
       client.outputChannel.show();
     });
 

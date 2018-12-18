@@ -115,14 +115,28 @@ export class GraphQLClientProject extends GraphQLProject {
   }
 
   public getProjectStats() {
+    // use this to remove primitives and internal fields for stats
+    const filterTypes = (type: string) =>
+      !/__.*|Boolean|ID|Int|String|Float/.test(type);
+
+    const serviceTypes = this.serviceSchema
+      ? Object.keys(this.serviceSchema.getTypeMap()).filter(filterTypes).length
+      : 0;
+    const totalTypes = this.schema
+      ? Object.keys(this.schema.getTypeMap()).filter(filterTypes).length
+      : 0;
+
     return {
       serviceId: this.serviceID,
-      types: this.serviceSchema
-        ? Object.keys(this.serviceSchema.getTypeMap).length
-        : 0,
+      // filter out primitives and internal Types for type stats to match engine
+      types: {
+        service: serviceTypes,
+        client: totalTypes - serviceTypes,
+        total: totalTypes
+      },
       tag: this.config.tag,
-      loaded: this.serviceID,
-      lastFetch: ""
+      loaded: this.serviceID ? true : false,
+      lastFetch: this.lastLoadDate
     };
   }
 
@@ -228,8 +242,6 @@ export class GraphQLClientProject extends GraphQLProject {
         ] = await engineClient.loadSchemaTagsAndFieldStats(serviceID);
         this._onSchemaTags && this._onSchemaTags([serviceID, schemaTags]);
         this.fieldStats = fieldStats;
-
-        console.log(this.fieldStats);
         this.lastLoadDate = +new Date();
 
         this.generateDecorations();
