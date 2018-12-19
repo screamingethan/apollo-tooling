@@ -45,6 +45,24 @@ export class GraphQLServiceProject extends GraphQLProject {
   validate() {}
 
   getProjectStats() {
-    return {};
+    // use this to remove primitives and internal fields for stats
+    const filterTypes = (type: string) =>
+      !/__.*|Boolean|ID|Int|String|Float/.test(type);
+
+    const serviceTypes = this.schema
+      ? Object.keys(this.schema.getTypeMap()).filter(filterTypes).length
+      : 0;
+
+    return {
+      loaded: true,
+      serviceId: this.displayName(),
+      types: {
+        service: serviceTypes,
+        client: 0,
+        total: serviceTypes
+      },
+      tag: this.config.tag,
+      lastFetch: this.lastLoadDate
+    };
   }
 }

@@ -65,6 +65,8 @@ export abstract class GraphQLProject implements GraphQLSchemaProvider {
   private fileSet: FileSet;
   protected loadingHandler: LoadingHandler;
 
+  protected lastLoadDate?: number;
+
   constructor({
     config,
     fileSet,
@@ -126,10 +128,12 @@ export abstract class GraphQLProject implements GraphQLSchemaProvider {
   }
 
   public resolveSchema(config: SchemaResolveConfig): Promise<GraphQLSchema> {
+    this.lastLoadDate = +new Date();
     return this.schemaProvider.resolveSchema(config);
   }
 
   public onSchemaChange(handler: NotificationHandler<GraphQLSchema>) {
+    this.lastLoadDate = +new Date();
     return this.schemaProvider.onSchemaChange(handler);
   }
 

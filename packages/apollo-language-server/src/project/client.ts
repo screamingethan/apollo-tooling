@@ -85,7 +85,7 @@ export class GraphQLClientProject extends GraphQLProject {
   private _onSchemaTags?: NotificationHandler<[ServiceID, SchemaTag[]]>;
 
   private fieldStats?: FieldStats;
-  private lastLoadDate?: number;
+  protected lastLoadDate?: number;
 
   constructor({
     config,
